@@ -1,0 +1,156 @@
+﻿@{
+    Layout = "_Layout";
+}
+
+@{
+    ViewData["Title"] = "Shopping CRUD";
+}
+
+
+@section Scripts{
+
+    <script>
+
+    $(window).on("load", function (e) {
+        refreshList();
+    })
+
+    function refreshList() {
+        var url = "@Url.Action("List")";
+        $(".loading-gif").show();
+        $("#list").hide();
+
+        $.ajax({
+            type: "GET",
+            url: url,
+            success(response) {
+                $("#list").html(response);
+                $(".loading-gif").hide();
+                $("#list").show();
+            }
+        })
+    }
+
+
+    function addOrEditForm(id) {
+        var url = "@Url.Action("AddOrEdit")";
+
+        $.ajax({
+            type: "GET",
+            url: url,
+            data: { id : id },
+            success(response) {
+                $("#modalFormContent").html(response);
+                $("#modalForm").modal("show");
+            }
+        })
+    }
+
+
+
+    function save() {
+        var url = "@Url.Action("AddOrEdit")";
+        var formData = $("#frmEmployee").serialize();
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: formData,
+            success(response) {
+                if (response.result) {
+                    refreshList();
+                    $("#modalForm").modal("hide");
+                }
+                else {
+                    alert(response.message);
+                }
+            }
+        })
+    }
+
+
+
+    function confirmDelete(id) {
+        $("#hdEmployeeToDeleteId").val(id);
+        $("#modalDelete").modal("show");
+    }
+
+
+    function deleteRecord() {
+        var url = "@Url.Action("Delete")";
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: { id: $("#hdEmployeeToDeleteId").val() },
+            success(response) {addOrEditForm
+                if (response.result) {
+                    refreshList();
+                    $("#modalDelete").modal("hide");
+                }
+                else {
+                    alert("Error on deleting");
+                }
+
+            }
+        })
+    }
+
+    </script>
+}
+
+
+@Html.Hidden("hdEmployeeToDeleteId", "")
+
+    <h1 class="display-4">Employee List</h1>
+    <div class="loading-gif">
+        <img src="~/img/giphy.gif" />
+    </div>
+    <div id="list" class="container">
+
+    </div>
+
+<div class="modal fade" id="modalForm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add or Edit Employee</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="modalFormContent"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="save()">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalDelete" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Delete Employee</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure to delete this record?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="deleteRecord()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
