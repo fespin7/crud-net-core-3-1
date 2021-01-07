@@ -27,7 +27,6 @@ namespace App.UI.Controllers
 
         public IActionResult Index()
         {
-
             return View();
         }
 
@@ -55,48 +54,33 @@ namespace App.UI.Controllers
         [HttpPost]
         public JsonResult AddOrEdit(Employee employee)
         {
-            try
+            if (employee.EmployeeId > 0)
             {
-                if (employee.EmployeeId > 0)
-                {
-                    var emp = _uow.EmployeeRepository.FindById(employee.EmployeeId);
-                    emp.Name = employee.Name;
-                    emp.TypeId = employee.TypeId;
-                    emp.Address = employee.Address;
-                    emp.EmploymentDate = employee.EmploymentDate;
-                    _uow.EmployeeRepository.Update(emp);
-                }
-                else
-                {
-                    _uow.EmployeeRepository.Create(employee);
-                }
-
-                _uow.Save();
-
-                return Json(new { result = true });
+                var emp = _uow.EmployeeRepository.FindById(employee.EmployeeId);
+                emp.Name = employee.Name;
+                emp.TypeId = employee.TypeId;
+                emp.Address = employee.Address;
+                emp.EmploymentDate = employee.EmploymentDate;
+                _uow.EmployeeRepository.Update(emp);
             }
-            catch (Exception ex)
+            else
             {
-                return Json(new { result = false, message = ex.Message });
+                _uow.EmployeeRepository.Create(employee);
             }
+
+            _uow.Save();
+
+            return Json(new { result = true });
         }
 
 
         [HttpPost]
         public JsonResult Delete(int id)
         {
-            try
-            {
-                _uow.EmployeeRepository.Delete(id);
-                _uow.Save();
+            _uow.EmployeeRepository.Delete(id);
+            _uow.Save();
 
-                return Json(new { result = true });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { result = false, message = ex.Message });
-            }
-
+            return Json(new { result = true });
         }
 
 
@@ -110,5 +94,7 @@ namespace App.UI.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+
     }
 }

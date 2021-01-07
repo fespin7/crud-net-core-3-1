@@ -1,0 +1,17 @@
+﻿@{
+    Exception ex = ViewData["Exception"] != null ? ViewData["Exception"] as Exception : null;
+}
+
+<h1 class="text-danger">Error.</h1>
+<h2 class="text-danger">An error occurred while processing your request.</h2>
+
+@if (ex != null)
+{
+    <h3>Development Mode is enabled</h3>
+    <p>
+        <strong>This shouldn't be enabled for deployed applications.</strong> Swap to <strong>Production</strong> environment to hide detailed information about the error.
+    </p>
+    <p>
+        <strong>@ex.Message</strong> @ex.StackTrace
+    </p>
+}

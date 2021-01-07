@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using App.Core.Interfaces;
 using App.Infrastructure.Context;
+using App.Infrastructure.Filters;
 using App.Infrastructure.Repository;
+using App.Infrastructure.Entities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -12,6 +14,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using FluentValidation.AspNetCore;
+using App.Infrastructure.Validators;
+using FluentValidation;
 
 namespace App.UI
 {
@@ -20,6 +25,9 @@ namespace App.UI
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+
+            //Disable localization manager so we can work with default english messages
+            ValidatorOptions.Global.LanguageManager.Enabled = false;
         }
 
         public IConfiguration Configuration { get; }
@@ -29,13 +37,15 @@ namespace App.UI
         {
             services.AddDbContext<ShoppingContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Shopping")));
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddControllersWithViews();
+            services.Configure<ExceptionFilterOptions>(Configuration.GetSection("ExceptionFilter"));
+            services.AddControllersWithViews(options => {
+                options.Filters.Add<CustomExceptionFilter>();
+            }).AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<EmployeeValidator>());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

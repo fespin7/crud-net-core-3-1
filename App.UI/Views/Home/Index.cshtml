@@ -9,6 +9,8 @@
 
 @section Scripts{
 
+    @await Html.PartialAsync("/Views/Shared/_ValidationScriptsPartial.cshtml")
+
     <script>
 
     $(window).on("load", function (e) {
@@ -25,6 +27,11 @@
             url: url,
             success(response) {
                 $("#list").html(response);
+                $(".loading-gif").hide();
+                $("#list").show();
+            },
+            error(err) {
+                $("#list").html(err.responseText);
                 $(".loading-gif").hide();
                 $("#list").show();
             }
@@ -52,20 +59,33 @@
         var url = "@Url.Action("AddOrEdit")";
         var formData = $("#frmEmployee").serialize();
 
-        $.ajax({
-            type: "POST",
-            url: url,
-            data: formData,
-            success(response) {
-                if (response.result) {
-                    refreshList();
-                    $("#modalForm").modal("hide");
+        var form = $("#frmEmployee");
+        $.validator.unobtrusive.parse(form);
+
+        if (form.valid() === true) {
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: formData,
+                dataType: "json",
+                success(response) {
+                    if (response.result) {
+                        refreshList();
+                        $("#modalForm").modal("hide");
+                    }
+                    else {
+                        alert(response.message);
+                    }
+                },
+                error(err) {
+                    alert(err.responseJSON.title);
                 }
-                else {
-                    alert(response.message);
-                }
-            }
-        })
+            })
+
+        }
+
+        
     }
 
 
@@ -91,7 +111,9 @@
                 else {
                     alert("Error on deleting");
                 }
-
+            },
+            error(err) {
+                alert(err.responseJSON.title);
             }
         })
     }
@@ -102,13 +124,13 @@
 
 @Html.Hidden("hdEmployeeToDeleteId", "")
 
-    <h1 class="display-4">Employee List</h1>
-    <div class="loading-gif">
-        <img src="~/img/giphy.gif" />
-    </div>
-    <div id="list" class="container">
+<h1 class="display-4">Employee List</h1>
+<div class="loading-gif">
+    <img src="~/img/giphy.gif" />
+</div>
+<div id="list" class="container">
 
-    </div>
+</div>
 
 <div class="modal fade" id="modalForm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
