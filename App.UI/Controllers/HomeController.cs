@@ -17,12 +17,14 @@ namespace App.UI.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly IUnitOfWork _uow;
+        private readonly IEmployeeService _employeeService;
+        private readonly IEmployeeTypeService _employeeTypeService;
 
-        public HomeController(ILogger<HomeController> logger, IUnitOfWork uow)
+        public HomeController(ILogger<HomeController> logger, IEmployeeService employeeService, IEmployeeTypeService employeeTypeService)
         {
             _logger = logger;
-            _uow = uow;
+            _employeeService = employeeService;
+            _employeeTypeService = employeeTypeService;
         }
 
         public IActionResult Index()
@@ -30,20 +32,20 @@ namespace App.UI.Controllers
             return View();
         }
 
-        public IActionResult List()
+        public async Task<IActionResult> List()
         {
-            var employeeList = _uow.EmployeeRepository.Read();
+            var employeeList = await _employeeService.List();
             return View(employeeList);
         }
 
-        public IActionResult AddOrEdit(int? id)
+        public async Task<IActionResult> AddOrEdit(int? id)
         {
             var employee = new Employee();
-            var employeeTypeList = _uow.EmployeeTypeRepository.Read();
+            var employeeTypeList = await _employeeTypeService.List();
 
             if (id.HasValue && id.Value > 0)
             {
-                employee = _uow.EmployeeRepository.FindById(id.Value);
+                employee = await _employeeService.FindById(id.Value);
             }
 
             ViewBag.EmployeeTypes = new SelectList(employeeTypeList, "TypeId", "Name");
@@ -52,34 +54,25 @@ namespace App.UI.Controllers
         }
 
         [HttpPost]
-        public JsonResult AddOrEdit(Employee employee)
+        public async Task<JsonResult> AddOrEdit(Employee employee)
         {
             if (employee.EmployeeId > 0)
             {
-                var emp = _uow.EmployeeRepository.FindById(employee.EmployeeId);
-                emp.Name = employee.Name;
-                emp.TypeId = employee.TypeId;
-                emp.Address = employee.Address;
-                emp.EmploymentDate = employee.EmploymentDate;
-                _uow.EmployeeRepository.Update(emp);
+                _employeeService.Update(employee);
             }
             else
             {
-                _uow.EmployeeRepository.Create(employee);
+                await _employeeService.Create(employee);
             }
-
-            _uow.Save();
 
             return Json(new { result = true });
         }
 
 
         [HttpPost]
-        public JsonResult Delete(int id)
+        public async Task<JsonResult> Delete(int id)
         {
-            _uow.EmployeeRepository.Delete(id);
-            _uow.Save();
-
+            await  _employeeService.Delete(id);
             return Json(new { result = true });
         }
 

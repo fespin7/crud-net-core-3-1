@@ -17,6 +17,7 @@ using Microsoft.Extensions.Hosting;
 using FluentValidation.AspNetCore;
 using App.Infrastructure.Validators;
 using FluentValidation;
+using App.Core.Services;
 
 namespace App.UI
 {
@@ -36,6 +37,9 @@ namespace App.UI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ShoppingContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Shopping")));
+            services.AddScoped<IEmployeeService, EmployeeService>();
+            services.AddScoped<IEmployeeTypeService, EmployeeTypeService>();
+            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.Configure<ExceptionFilterOptions>(Configuration.GetSection("ExceptionFilter"));
             services.AddControllersWithViews(options => {

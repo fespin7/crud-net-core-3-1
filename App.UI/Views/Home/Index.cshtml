@@ -31,7 +31,7 @@
                 $("#list").show();
             },
             error(err) {
-                $("#list").html(err.responseText);
+                $("#list").html(err.statusText);
                 $(".loading-gif").hide();
                 $("#list").show();
             }
@@ -48,6 +48,10 @@
             data: { id : id },
             success(response) {
                 $("#modalFormContent").html(response);
+                $("#modalForm").modal("show");
+            },
+            error(err) {
+                $("#modalFormContent").html(err.statusText);
                 $("#modalForm").modal("show");
             }
         })

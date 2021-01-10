@@ -4,6 +4,7 @@ using App.Infrastructure.Context;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace App.Infrastructure.Repository
 {
@@ -53,5 +54,12 @@ namespace App.Infrastructure.Repository
         {
             _context.SaveChanges();
         }
+
+        public async Task SaveAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
+
+
     }
 }

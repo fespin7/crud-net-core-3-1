@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace App.Core.Interfaces
 {
@@ -10,5 +11,6 @@ namespace App.Core.Interfaces
         IGenericRepository<Employee> EmployeeRepository { get; }
         IGenericRepository<EmployeeType> EmployeeTypeRepository { get; }
         void Save();
+        Task SaveAsync();
     }
 }

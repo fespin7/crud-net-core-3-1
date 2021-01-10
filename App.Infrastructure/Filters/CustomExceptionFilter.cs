@@ -1,4 +1,5 @@
-﻿using App.Infrastructure.Entities;
+﻿using App.Core.Exceptions;
+using App.Infrastructure.Entities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -55,19 +56,39 @@ namespace App.Infrastructure.Filters
 
         protected void GetErrorJson(ExceptionContext context)
         {
-            var problemDetails = new ProblemDetails
+            var problemDetails = new ProblemDetails();
+
+            if (context.Exception.GetType() == typeof(AppException) || 
+                context.Exception.GetType() == typeof(BusinessException))
             {
-                Title = "An error occurred while processing your request.",
-                Status = (int)HttpStatusCode.InternalServerError,
-                Detail = string.Empty
-            };
+                var ex = context.Exception.GetType() == typeof(AppException) ? (AppException)context.Exception : (BusinessException)context.Exception;
+
+                problemDetails = new ProblemDetails
+                {
+                    Title = ex.Message,
+                    Status = (int)ex.StatusCode,
+                    Detail = string.Empty
+                };
+
+                context.HttpContext.Response.StatusCode = (int)ex.StatusCode;
+            }
+            else
+            {
+                problemDetails = new ProblemDetails
+                {
+                    Title = "An error occurred while processing your request.",
+                    Status = (int)HttpStatusCode.InternalServerError,
+                    Detail = string.Empty
+                };
+
+                context.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            }
 
             if (_hostingEnvironment.IsDevelopment())
                 problemDetails.Detail = $@"{context.Exception.Message}{Environment.NewLine}{context.Exception.StackTrace}";
 
             var json = JsonSerializer.Serialize(problemDetails);
             context.Result = new ObjectResult(json);
-            context.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             context.ExceptionHandled = true;
         }
     }
