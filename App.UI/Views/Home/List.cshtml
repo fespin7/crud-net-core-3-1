@@ -1,4 +1,4 @@
-﻿@model IEnumerable<App.Core.Entities.Employee>
+﻿@model IEnumerable<App.Core.ViewModels.EmployeeViewModel>
 
 <p>
     <div style="text-align:left">
@@ -15,7 +15,7 @@
                 @Html.DisplayNameFor(model => model.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.TypeId)
+                @Html.DisplayNameFor(model => model.TypeName)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Phone)
@@ -40,7 +40,7 @@
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.TypeId)
+                    @Html.DisplayFor(modelItem => item.TypeName)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Phone)

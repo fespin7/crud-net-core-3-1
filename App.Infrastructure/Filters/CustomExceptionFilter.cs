@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using System;
@@ -22,19 +23,23 @@ namespace App.Infrastructure.Filters
         private readonly IWebHostEnvironment _hostingEnvironment;
         private readonly IModelMetadataProvider _modelMetadataProvider;
         private readonly IOptions<ExceptionFilterOptions> _options;
+        private readonly ILogger<CustomExceptionFilter> _logger;
 
         public CustomExceptionFilter(IWebHostEnvironment hostingEnvironment, IModelMetadataProvider modelMetadataProvider,
-            IOptions<ExceptionFilterOptions> options)
+            IOptions<ExceptionFilterOptions> options, ILogger<CustomExceptionFilter> logger)
         {
             _hostingEnvironment = hostingEnvironment;
             _modelMetadataProvider = modelMetadataProvider;
             _options = options;
+            _logger = logger;
         }
 
         public void OnException(ExceptionContext context)
         {
             var acceptHeader = context.HttpContext.Request.GetTypedHeaders().Accept;
             var isJson = acceptHeader.Contains(new MediaTypeHeaderValue("application/json"));
+
+            _logger.LogError(context.Exception, "Unhandled Exception logged in my Exception Filter");
 
             if (isJson)
                 GetErrorJson(context);

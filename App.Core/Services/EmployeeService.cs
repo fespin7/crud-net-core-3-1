@@ -1,6 +1,7 @@
 ﻿using App.Core.Entities;
 using App.Core.Exceptions;
 using App.Core.Interfaces;
+using App.Core.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -17,6 +18,11 @@ namespace App.Core.Services
             _uow = uow;
         }
 
+        public async Task<IEnumerable<EmployeeViewModel>> ListEmployeeViewModel()
+        {
+            return await _uow.EmployeeRepository.ListEmployeeViewModel();
+        }
+
         public async Task<IEnumerable<Employee>> List()
         {
             return await _uow.EmployeeRepository.ReadAsync();
@@ -24,6 +30,7 @@ namespace App.Core.Services
 
         public async Task<Employee> FindById(int id)
         {
+            //throw new Exception("Exception from FindById service");
             return await _uow.EmployeeRepository.FindByIdAsync(id);
         }
 

@@ -11,7 +11,7 @@ namespace App.Infrastructure.Repository
     public class UnitOfWork : IUnitOfWork
     {
         private ShoppingContext _context;
-        private IGenericRepository<Employee> _employeeRepository;
+        private IEmployeeRepository _employeeRepository;
         private IGenericRepository<EmployeeType> _employeeTypeRepository;
 
         public UnitOfWork(ShoppingContext context)
@@ -19,12 +19,12 @@ namespace App.Infrastructure.Repository
             _context = context;
         }
 
-        public IGenericRepository<Employee> EmployeeRepository {
+        public IEmployeeRepository EmployeeRepository {
 
             get
             {
                 if (_employeeRepository == null)
-                    _employeeRepository = new GenericRepository<Employee>(_context);
+                    _employeeRepository = new EmployeeRepository(_context);
 
                 return _employeeRepository;
             }

@@ -8,7 +8,7 @@ namespace App.Core.Interfaces
 {
     public interface IUnitOfWork: IDisposable
     {
-        IGenericRepository<Employee> EmployeeRepository { get; }
+        IEmployeeRepository EmployeeRepository { get; }
         IGenericRepository<EmployeeType> EmployeeTypeRepository { get; }
         void Save();
         Task SaveAsync();

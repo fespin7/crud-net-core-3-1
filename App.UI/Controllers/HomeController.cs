@@ -34,7 +34,10 @@ namespace App.UI.Controllers
 
         public async Task<IActionResult> List()
         {
-            var employeeList = await _employeeService.List();
+
+            //_logger.LogInformation("List info message from controller");
+            //_logger.LogWarning("Warning from controller");
+            var employeeList = await _employeeService.ListEmployeeViewModel();
             return View(employeeList);
         }
 

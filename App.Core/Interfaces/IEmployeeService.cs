@@ -1,4 +1,5 @@
 ﻿using App.Core.Entities;
+using App.Core.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,6 +9,7 @@ namespace App.Core.Interfaces
 {
     public interface IEmployeeService
     {
+        Task<IEnumerable<EmployeeViewModel>> ListEmployeeViewModel();
         Task<IEnumerable<Employee>> List();
         Task<Employee> FindById(int id);
         Task Create(Employee entity);
