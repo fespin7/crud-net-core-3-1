@@ -41,7 +41,7 @@ namespace App.Infrastructure.Filters
 
             _logger.LogError(context.Exception, "Unhandled Exception logged in my Exception Filter");
 
-            if (isJson)
+            if (isJson || _options.Value.ApplicationType == "API")
                 GetErrorJson(context);
             else
                 GetErrorView(context);
@@ -93,7 +93,13 @@ namespace App.Infrastructure.Filters
                 problemDetails.Detail = $@"{context.Exception.Message}{Environment.NewLine}{context.Exception.StackTrace}";
 
             var json = JsonSerializer.Serialize(problemDetails);
-            context.Result = new ObjectResult(json);
+
+            if(_options.Value.ApplicationType == "API")
+                context.Result = new ObjectResult(problemDetails);
+            else
+                context.Result = new ObjectResult(json);
+
+
             context.ExceptionHandled = true;
         }
     }

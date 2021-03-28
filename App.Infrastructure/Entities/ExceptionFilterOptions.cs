@@ -7,5 +7,6 @@ namespace App.Infrastructure.Entities
     public class ExceptionFilterOptions
     {
         public string ErrorViewName { get; set; }
+        public string ApplicationType { get; set; }
     }
 }

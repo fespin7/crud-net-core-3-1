@@ -1,4 +1,5 @@
-﻿using App.Core.Entities;
+﻿using App.Core.DataTransferObjects;
+using App.Core.Entities;
 using App.Core.Interfaces;
 using App.Core.ViewModels;
 using App.Infrastructure.Context;
@@ -20,6 +21,21 @@ namespace App.Infrastructure.Repository
             _context = context;
         }
 
+        public async Task<IEnumerable<EmployeeDTO>> ListEmployee()
+        {
+            return await _context.Employee.Include(employee => employee.Type)
+                            .Select(r => new EmployeeDTO
+                            {
+                                EmployeeId = r.EmployeeId,
+                                Name = r.Name,
+                                Address = r.Address,
+                                Phone = r.Phone,
+                                EmploymentDate = r.EmploymentDate,
+                                TypeId = r.TypeId,
+                                TypeName = r.Type.Name
+                            }).ToListAsync();
+        }
+
         public async Task<IEnumerable<EmployeeViewModel>> ListEmployeeViewModel()
         {
             return await _context.Employee.Include(employee => employee.Type)
@@ -28,6 +44,7 @@ namespace App.Infrastructure.Repository
                                 EmployeeId = r.EmployeeId,
                                 Name = r.Name,
                                 Address = r.Address,
+                                Phone = r.Phone,
                                 EmploymentDate = r.EmploymentDate,
                                 TypeName = r.Type.Name
                             }).ToListAsync();

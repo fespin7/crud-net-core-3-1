@@ -1,4 +1,5 @@
-﻿using App.Core.Entities;
+﻿using App.Core.DataTransferObjects;
+using App.Core.Entities;
 using App.Core.Exceptions;
 using App.Core.Interfaces;
 using App.Core.ViewModels;
@@ -23,6 +24,11 @@ namespace App.Core.Services
             return await _uow.EmployeeRepository.ListEmployeeViewModel();
         }
 
+        public async Task<IEnumerable<EmployeeDTO>> ListEmployee()
+        {
+            return await _uow.EmployeeRepository.ListEmployee();
+        }
+
         public async Task<IEnumerable<Employee>> List()
         {
             return await _uow.EmployeeRepository.ReadAsync();
@@ -30,8 +36,12 @@ namespace App.Core.Services
 
         public async Task<Employee> FindById(int id)
         {
-            //throw new Exception("Exception from FindById service");
-            return await _uow.EmployeeRepository.FindByIdAsync(id);
+            var employee = await _uow.EmployeeRepository.FindByIdAsync(id);
+
+            if(employee == null)
+                throw new AppException(HttpStatusCode.NotFound, "Employee not found");
+
+            return employee;
         }
 
         public async Task Create(Employee employee)
@@ -42,6 +52,11 @@ namespace App.Core.Services
 
         public async Task Delete(int id)
         {
+            var originalEmployee = _uow.EmployeeRepository.FindById(id);
+
+            if (originalEmployee == null)
+                throw new AppException(HttpStatusCode.NotFound, "Employee not found");
+
             await _uow.EmployeeRepository.DeleteAsync(id);
             await _uow.SaveAsync();
         }
@@ -61,7 +76,7 @@ namespace App.Core.Services
             }
             else
             {
-                throw new AppException(HttpStatusCode.NotFound, "Employee doesn't exist");
+                throw new AppException(HttpStatusCode.NotFound, "Employee not found");
             }
 
             originalEmployee.Name = employee.Name;

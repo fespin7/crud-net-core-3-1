@@ -1,4 +1,5 @@
-﻿using App.Core.Entities;
+﻿using App.Core.DataTransferObjects;
+using App.Core.Entities;
 using FluentValidation;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Text;
 
 namespace App.Infrastructure.Validators
 {
-    public class EmployeeValidator : AbstractValidator<Employee>
+    public class EmployeeValidator : AbstractValidator<EmployeeDTO>
     {
         public EmployeeValidator()
         {
